@@ -31,7 +31,7 @@ export const LABELS = {
   MENU_FAUCET: "Faucet",
   MENU_TRANSACTION: "Transactions",
   MARGIN_TRADING: "Margin Trading",
-  APP_TITLE: "Solana DAPP",
+  APP_TITLE: "SolMate",
   CONNECT_BUTTON: "Connect",
   WALLET_TOOLTIP: "Wallet public key",
   WALLET_BALANCE: "Wallet balance",
@@ -105,4 +105,5 @@ export const LABELS = {
   NO_COLL_TYPE_MESSAGE: "Choose Collateral CCY",
   SAFER: "Safer",
   RISKIER: "Riskier",
+  ISDEV: (process.env.PUBLIC_URL ?? false) ? false : true,
 };

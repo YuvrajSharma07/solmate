@@ -5,6 +5,47 @@ body {
   --row-highlight: @background-color-base;
 }
 
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+#root {
+  height: 100%;
+}
+
+#root::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  filter: grayscale(100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.App {
+  position: relative;
+  height: 100%;
+  text-align: center;
+  min-width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.ant-row {
+  min-width: 100%;
+}
 .app-title {
   font-family: "FF Oxide Solid";
   font-style: normal;

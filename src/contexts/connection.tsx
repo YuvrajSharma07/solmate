@@ -44,7 +44,7 @@ export const ENDPOINTS = [
   },
 ];
 
-const DEFAULT = ENDPOINTS[0].endpoint;
+const DEFAULT = ENDPOINTS[2].endpoint;
 const DEFAULT_SLIPPAGE = 0.25;
 
 interface ConnectionConfig {
@@ -74,7 +74,7 @@ const ConnectionContext = React.createContext<ConnectionConfig>({
 export function ConnectionProvider({ children = undefined as any }) {
   const [endpoint, setEndpoint] = useLocalStorageState(
     "connectionEndpts",
-    ENDPOINTS[0].endpoint
+    ENDPOINTS[2].endpoint
   );
 
   const [slippage, setSlippage] = useLocalStorageState(

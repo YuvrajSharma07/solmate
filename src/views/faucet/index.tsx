@@ -8,6 +8,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 
 export const FaucetView = () => {
   const connection = useConnection();
+  console.log(connection)
   const { publicKey } = useWallet();
 
   const handleRequestAirdrop = useCallback(async () => {

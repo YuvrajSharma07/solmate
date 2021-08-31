@@ -17,12 +17,14 @@ export const AppLayout = React.memo(({ children }) => {
           <Header className="App-Bar">
             <Link to="/">
               <div className="app-title">
-                <h2>Solana DAPP</h2>
+                <h2>SolMate</h2>
               </div>
             </Link>
             <AppBar />
           </Header>
-          <Content style={{ padding: "0 50px" }}>{children}</Content>
+          <Content style={{ padding: "0 50px" }}>
+            {children}
+          </Content>
         </Layout>
       </div>
     </WalletModalProvider>

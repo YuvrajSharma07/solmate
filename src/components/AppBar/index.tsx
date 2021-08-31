@@ -1,21 +1,20 @@
-import React from "react";
-import { Button, Popover } from "antd";
-import { SettingOutlined } from "@ant-design/icons";
-import { Settings } from "../Settings";
-import { LABELS } from "../../constants";
-import {
-  WalletDisconnectButton,
-  WalletMultiButton,
-} from "@solana/wallet-adapter-ant-design";
-import { useWallet } from "@solana/wallet-adapter-react";
+import React from "react"
+// import { useWallet } from "@solana/wallet-adapter-react"
+
+// ant designs imports
+import { Button, Popover } from "antd"
+import { SettingOutlined } from "@ant-design/icons"
+
+import { Settings } from "../Settings"
+import { LABELS } from "../../constants"
 
 export const AppBar = (props: { left?: JSX.Element; right?: JSX.Element }) => {
-  const { connected } = useWallet();
+  // const { connected } = useWallet();
   const TopBar = (
     <div className="App-Bar-right">
-      <WalletMultiButton type="primary" />
       <div style={{ margin: 5 }} />
-      {connected ? <WalletDisconnectButton type="ghost" /> : null}
+      {/* {connected ? <WalletDisconnectButton type="ghost" /> : null} */}
+      <Button>Invite your partner!</Button>
       <Popover
         placement="topRight"
         title={LABELS.SETTINGS_TOOLTIP}
