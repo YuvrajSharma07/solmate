@@ -1,24 +1,30 @@
-import React from "react"
+import React, {
+  useContext,
+} from "react"
 // import { useWallet } from "@solana/wallet-adapter-react"
 
 // ant designs imports
 import { Button, Popover } from "antd"
 import { SettingOutlined } from "@ant-design/icons"
 
-import { Settings } from "../Settings"
+// import { Settings } from "../Settings"
 import { LABELS } from "../../constants"
+import { AuthContext } from "../../contexts";
 
-export const AppBar = (props: { left?: JSX.Element; right?: JSX.Element }) => {
+
+
+export const AppBar = ({ left, right, ...props }) => {
   // const { connected } = useWallet();
+  const authCon = useContext(AuthContext)
   const TopBar = (
     <div className="App-Bar-right">
       <div style={{ margin: 5 }} />
       {/* {connected ? <WalletDisconnectButton type="ghost" /> : null} */}
-      <Button>Invite your partner!</Button>
+      <Button onClick={!authCon.address ? () => authCon.handleConnectWallet() : ''}>Invite your partner!</Button>
       <Popover
         placement="topRight"
         title={LABELS.SETTINGS_TOOLTIP}
-        content={<Settings />}
+        // content={<Settings />}
         trigger="click"
       >
         <Button
@@ -28,7 +34,7 @@ export const AppBar = (props: { left?: JSX.Element; right?: JSX.Element }) => {
           icon={<SettingOutlined />}
         />
       </Popover>
-      {props.right}
+      {right}
     </div>
   );
 

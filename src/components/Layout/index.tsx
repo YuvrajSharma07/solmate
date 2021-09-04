@@ -21,7 +21,7 @@ export const AppLayout = React.memo(({ children }) => {
                 <h2>SolMate</h2>
               </div>
             </Link>
-            <AppBar />
+            <AppBar right left />
           </Header>
           <Content style={{ padding: "0 50px" }}>
             {children}

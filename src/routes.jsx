@@ -59,7 +59,7 @@ export function Routes() {
                 <Switch>
                   <Route exact path="/" component={AuthView} />
                   <Route exact path="/invite/:userURLData" component={DashboardView} />
-                  {LABELS.ISDEV && <Route exact path="/faucet" children={<FaucetView />} />}
+                  {/* {LABELS.ISDEV && <Route exact path="/faucet" children={<FaucetView />} />} */}
                 </Switch>
               </AppLayout>
             {/* </MarketProvider>

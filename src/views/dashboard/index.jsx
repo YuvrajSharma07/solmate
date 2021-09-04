@@ -1,6 +1,11 @@
 import React, {
-    useContext
+useContext
 } from 'react'
+
+
+import { 
+	Button, Col, Row, 
+  } from "antd"
 
 import {
 	// Connection,
@@ -29,6 +34,7 @@ import {
 import bs58 from 'bs58'
 // import * as BufferLayout from 'buffer-layout'
 import { AuthContext } from '../../contexts'
+import { notify } from '../../utils/notifications'
 
 
 const DashboardView = ({match, ...props}) => {
@@ -41,11 +47,15 @@ const DashboardView = ({match, ...props}) => {
 
 	const senderPubkey = urlDataArr[0]
 
+	const senderName = urlDataArr[1]
+
     const {
         getConnection,
         getPublicKey,
         getRecentBlockhash,
         setMintAddress,
+		address,
+		handleConnectWallet
     } = useContext(AuthContext)
 
     const createTokens = async () => {
@@ -112,14 +122,34 @@ const DashboardView = ({match, ...props}) => {
 
 		} catch (e) {
 			setMintAddress(null)
-			alert(e.message)
-			console.log(e, e.message)
+			notify({
+				message: e.message
+			})
+			// alert(e.message)
+			// console.log(e, e.message)
 		}
 	}
 
     return (
         <>
-
+		<Row align="center" justify="center">
+			<Col md={12} span={24} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+				<div>
+					<h1>{senderName} has proposed to marry you!</h1>
+					{address ? 
+						<Button 
+							size="large" 
+							type="primary" 
+							onClick={createTokens}
+						>
+							Make them your SolMate
+						</Button>
+					:
+						<Button onClick={handleConnectWallet}>Login via Phantom</Button>
+					}
+				</div>
+			</Col>
+		</Row>
         </>
     )
 }

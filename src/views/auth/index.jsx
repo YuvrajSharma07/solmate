@@ -3,7 +3,7 @@ import {
   Button, 
   Col, 
   Row,
-  Card,
+  // Card,
 } from "antd";
 import React, { 
   // useEffect,
@@ -39,19 +39,24 @@ export const AuthView = () => {
   if (!authCon.address) {
     return (
       <Row align="middle">
-        <Col md={16} span={24}>
+        <Col 
+          // md={16} 
+          span={24}
+        >
           <HomePageIcon />
-        </Col>
-        <Col md={8} span={24}>
-          <div className="site-card-border-less-wrapper">
-            <Card title="Card title" bordered={false}>
-              {/* <TorusAuth /> */}
-              <Button onClick={() => (authCon.handleConnectWallet())}>Login with Phantom</Button>
-              <hr />
-              {/* <WalletMultiButton type="ghost" /> */}
-            </Card>
+          <div style={{marginTop: '1.5rem'}}>
+            <Button type="primary" size="large" onClick={() => (authCon.handleConnectWallet())}>Connect with Phantom</Button>
           </div>
         </Col>
+        {/* <Col md={8} span={24}>
+          <div className="site-card-border-less-wrapper">
+            <Card title="Card title" bordered={false}>
+              <TorusAuth />
+              <hr />
+              <WalletMultiButton type="ghost" />
+            </Card>
+          </div>
+        </Col> */}
       </Row>
     );
   }

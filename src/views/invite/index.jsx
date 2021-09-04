@@ -44,7 +44,12 @@ const InviteView = () => {
     
     const publicKey = getPublicKey()
 
-    const [inputVal, setInputVal] = useState('')
+    const [username, setUsername] = useState('SomeoneSpecial')
+
+    const urlData = `${publicKey} ${username}`
+
+    const [inputVal, setInputVal] = useState((String(`${window.location.origin}/invite/${window.btoa(urlData)}`)))
+
 
     const copyLink = () => {
         navigator.clipboard.writeText(inputVal)
@@ -53,22 +58,36 @@ const InviteView = () => {
         })
     }
 
-    useEffect(() => {
-        setInputVal(new String(`${window.location.origin}/invite/${window.btoa(publicKey)}`))
-    }, [])
+    const handleInput = (char) => {
+        setUsername(char.replace(' ', ''))
+    }
+
+    // useEffect(() => {
+        
+    // }, [])
 
     return (
         <>
-        <Row>
-            <Col>
+        <Row align="center" justify="center">
+            <Col style={{alignItems: 'center', display: 'flex'}}>
             <div>
                 <div>
-                    Send proposal to your solmate.
+                    <h1>Send proposal to your solmate. </h1>
+                    <div>
+                        <h3>Enter your name or a unique keyword so that your partner knows it's you.</h3>
+                        <small>Avoid use of spaces in the name</small>
+                        <Input 
+                            value={username} 
+                            onChange={(e) => {handleInput(e.target.value)}} 
+                            onBlur={() => setInputVal(String(`${window.location.origin}/invite/${window.btoa(`${publicKey} ${username}`)}`))}
+                        />
+                    </div>
+                    <hr style={{border: '0.5px solid #eee'}} />
                     <div>
                         <Input 
                             value={inputVal} 
                             bordered={false} 
-                            addonAfter={<Button type="text" onClick={copyLink}>Copy link</Button>} 
+                            addonAfter={<Button type="ghost" onClick={copyLink}>Copy link</Button>} 
                             readOnly 
                         />
                     </div>

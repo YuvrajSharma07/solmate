@@ -63,6 +63,12 @@ class AuthContextProvider extends React.Component {
 		}
 	}
 
+	getMyInfo = async () => {
+		const conn = this.getConnection()
+		const result = await conn.getParsedTokenAccountsByOwner(getPublicKey(), {programId: TOKEN_PROGRAM_ID}, 'processed')
+		return result
+	}
+
     render() {
         return (
             <AuthContext.Provider value={{
