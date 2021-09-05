@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import "./../../App.less";
 import { Layout } from "antd";
 import { Link } from "react-router-dom";
@@ -6,13 +6,19 @@ import { Link } from "react-router-dom";
 
 import { LABELS } from "../../constants";
 import { AppBar } from "../AppBar";
+import { AuthContext } from "../../contexts";
 
 const { Header, Content } = Layout;
 
 export const AppLayout = React.memo(({ children }) => {
+  const {married} = useContext(AuthContext)
   return (
     <>
     {/* <WalletModalProvider> */}
+    {married ?
+    <>{children}</>
+    :
+      <>
       <div className="App wormhole-bg">
         <Layout title={LABELS.APP_TITLE}>
           <Header className="App-Bar">
@@ -29,6 +35,8 @@ export const AppLayout = React.memo(({ children }) => {
         </Layout>
       </div>
     {/* </WalletModalProvider> */}
+    </>
+    }
     </>
   );
 });

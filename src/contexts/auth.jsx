@@ -23,7 +23,8 @@ const defaultAuthContextState = {
     mintAddress: null,
     tokenAccount: null,
     numberOfTokens: 0,
-	senderTokenAccount: null
+	senderTokenAccount: null,
+	married: false
 }
 
 const AuthContext = React.createContext(defaultAuthContextState)
@@ -145,6 +146,10 @@ class AuthContextProvider extends React.Component {
 		this.setState({senderTokenAccount})
 	}
 
+	setMarried = (married) => {
+		this.setState({married})
+	}
+
     render() {
         return (
             <AuthContext.Provider value={{
@@ -159,6 +164,7 @@ class AuthContextProvider extends React.Component {
 				setTokenAccount: this.setTokenAccount,
 				setSenderTokenAccount: this.setSenderTokenAccount,
 				getMyInfo: this.getMyInfo,
+				setMarried: this.setMarried,
             }}>
                 {this.props.children}
             </AuthContext.Provider>

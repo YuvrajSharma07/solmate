@@ -29,6 +29,8 @@ import {
 	// u64
 } from '@solana/spl-token'
 
+import heartIcon from '../../components/AnimatedLogo/solana.svg'
+
 // import {
 //     Buffer
 // } from 'buffer'
@@ -44,7 +46,6 @@ import Confetti from 'react-confetti'
 
 const DashboardView = ({match, ...props}) => {
 	const {width, height} = useWindowSize()
-	const [married, setMarried] = useState(false)
 	const urlParams = match.params
 
 	const {userURLData} = urlParams
@@ -69,6 +70,8 @@ const DashboardView = ({match, ...props}) => {
 		setSenderTokenAccount,
 		senderTokenAccount,
 		getMyInfo,
+		married,
+		setMarried,
     } = useContext(AuthContext)
 
 	const createTokens = async () => {
@@ -263,18 +266,21 @@ const DashboardView = ({match, ...props}) => {
 		: 
 			<></>
 		}
-		<Row align="center" justify="center">
-			<Col md={12} span={24} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+		<Row align="center" justify="center" style={{height: height}}>
+			<Col md={12} span={24} style={{display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center'}}>
 				<div>
 					{married ? 
 						<>
 						<div>
-							<h1 style={{fontSize: '5rem'}} className="zoomin">Congratulations!</h1>
-							<h2 style={{fontSize: '3rem', color: '#CD097F', wordBreak: 'break-all'}} className="zoomin-5">I now pronounce SolMates with {senderPubkey} (aka {senderName})</h2>
+							<h1 style={{fontSize: '4rem', color: '#CD097F'}} className="zoomin">Congratulations!</h1>
+							<h2 style={{fontSize: '2rem'}} className="zoomin-5">You are now officially married <br />with your one and only SolMate, <span style={{color: '#CD097F'}}>{senderName}</span></h2>
 						</div>
 						</>
 					:
 						<>
+						<Col md={12} span={24} style={{margin: '0 auto'}}>
+							<img src={heartIcon} style={{height: 'auto', width: '100%'}} />
+						</Col>
 						<h1>{senderName} has proposed to marry you!</h1>
 						{address ? 
 							<Button 
