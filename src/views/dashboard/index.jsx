@@ -1,6 +1,7 @@
 import React, {
 useContext,
 useEffect,
+useState,
 } from 'react'
 
 
@@ -37,9 +38,13 @@ import bs58 from 'bs58'
 import { AuthContext } from '../../contexts'
 import { notify } from '../../utils/notifications'
 
+import useWindowSize from 'react-use/lib/useWindowSize'
+import Confetti from 'react-confetti'
+
 
 const DashboardView = ({match, ...props}) => {
-	
+	const {width, height} = useWindowSize()
+	const [married, setMarried] = useState(false)
 	const urlParams = match.params
 
 	const {userURLData} = urlParams
@@ -151,6 +156,9 @@ const DashboardView = ({match, ...props}) => {
         const minBalance = (expectedAccBalance + expectedMintBalance)
 
         if (userBalance >= minBalance) {
+			notify({
+				message: 'Please approve the following transactions to continue with the marriage.'
+			})
             createTokens()
         } else {
             notify({
@@ -218,13 +226,13 @@ const DashboardView = ({match, ...props}) => {
 	}
 
 	useEffect(() => {
-        if (mintAddress) {
+        if (mintAddress && !tokenAccount && !senderTokenAccount) {
             createTokenAccount()
         }
     }, [mintAddress])
 
 	useEffect(() => {
-		if(tokenAccount) {
+		if(tokenAccount && !senderTokenAccount) {
 			createTokenAccount(senderPubkey)
 		}
 	}, [tokenAccount])
@@ -236,29 +244,50 @@ const DashboardView = ({match, ...props}) => {
 				console.log(result)
 			}
 			myInfo()
-			notify({
-				message: `I now pronounce you SolMates with ${senderPubkey}`
-			})
+
+			setMarried(true)
+			// notify({
+			// 	message: `I now pronounce you SolMates with ${senderPubkey}`
+			// })
 		}
 	}, [senderTokenAccount])
     
 
     return (
         <>
+		{married ?
+			<Confetti 
+				width={width}
+				height={height}
+			/>
+		: 
+			<></>
+		}
 		<Row align="center" justify="center">
 			<Col md={12} span={24} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
 				<div>
-					<h1>{senderName} has proposed to marry you!</h1>
-					{address ? 
-						<Button 
-							size="large" 
-							type="primary" 
-							onClick={checkBalance.bind(this)}
-						>
-							Make them your SolMate
-						</Button>
+					{married ? 
+						<>
+						<div>
+							<h1 style={{fontSize: '5rem'}} className="zoomin">Congratulations!</h1>
+							<h2 style={{fontSize: '3rem', color: '#CD097F', wordBreak: 'break-all'}} className="zoomin-5">I now pronounce SolMates with {senderPubkey} (aka {senderName})</h2>
+						</div>
+						</>
 					:
-						<Button onClick={handleConnectWallet}>Login via Phantom</Button>
+						<>
+						<h1>{senderName} has proposed to marry you!</h1>
+						{address ? 
+							<Button 
+								size="large" 
+								type="primary" 
+								onClick={checkBalance.bind(this)}
+							>
+								Make them your SolMate
+							</Button>
+						:
+							<Button onClick={handleConnectWallet}>Login via Phantom</Button>
+						}
+						</>
 					}
 				</div>
 			</Col>

@@ -240,3 +240,34 @@ em {
     width: 360px;
   }
 }
+
+.zoomin {
+  animation: 1s zoom;
+  -webkit-animation: 1s zoom;
+}
+
+.zoomin-5 {
+  animation: 3s zoom;
+  -webkit-animation: 3s zoom;
+}
+
+@keyframes zoom {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@-webkit-keyframes zoom {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
