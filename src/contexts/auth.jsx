@@ -4,18 +4,26 @@ import React, {
 import {
 	Connection,
 	PublicKey,
+	Keypair,
+	SystemProgram,
+	Transaction,
+
 } from '@solana/web3.js'
 
 import {
 	TOKEN_PROGRAM_ID,
-
+	Token,
+	AccountLayout,
 } from '@solana/spl-token'
+
+import bs58 from 'bs58'
 
 const defaultAuthContextState = {
     address: null,
     mintAddress: null,
     tokenAccount: null,
     numberOfTokens: 0,
+	senderTokenAccount: null
 }
 
 const AuthContext = React.createContext(defaultAuthContextState)
@@ -62,9 +70,7 @@ class AuthContextProvider extends React.Component {
 			// console.log(getConnection())
             return true
 		} else {
-            return false
-			// alert("Phantom wallet is not installed. Please install.")
-			// window.open("https://phantom.app/", "_target");
+			window.open("https://phantom.app/", "_blank")
 		}
 	}
 
@@ -72,6 +78,71 @@ class AuthContextProvider extends React.Component {
 		const conn = this.getConnection()
 		const result = await conn.getParsedTokenAccountsByOwner(this.getPublicKey(), {programId: TOKEN_PROGRAM_ID}, 'processed')
 		return result
+	}
+
+	createTokenAccount = async (mintAddress) => {
+		(mintAddress && this.setState({mintAddress}))
+
+		const tokenMintPubkey = new PublicKey(`${mintAddress ?? this.state.mintAddress}`);
+		const ownerPubkey = this.getPublicKey();
+
+		const connection = this.getConnection();
+
+		const balanceNeeded = await Token.getMinBalanceRentForExemptAccount(
+			connection
+		);
+
+		const newAccount = new Keypair();
+
+		const createAccIx = SystemProgram.createAccount({
+			fromPubkey: ownerPubkey,
+			newAccountPubkey: newAccount.publicKey,
+			lamports: balanceNeeded,
+			space: AccountLayout.span,
+			programId: TOKEN_PROGRAM_ID
+		});
+
+		const createTokenAccountIx = Token.createInitAccountInstruction(
+			TOKEN_PROGRAM_ID,
+			tokenMintPubkey,
+			newAccount.publicKey,
+			ownerPubkey
+		);
+
+		let tx = new Transaction().add(createAccIx, createTokenAccountIx);
+
+		tx.feePayer = ownerPubkey;
+
+		tx.recentBlockhash = (await this.getRecentBlockhash()).blockhash;
+
+		tx.sign(newAccount);
+
+		const signedTransaction = await window.solana.request({
+			method: "signTransaction",
+			params: {
+				message: bs58.encode(tx.serializeMessage()),
+			},
+		});
+		// console.log(signedTransaction);
+
+		const signature = bs58.decode(signedTransaction.signature);
+		const publicKey = new PublicKey(signedTransaction.publicKey);
+		tx.addSignature(publicKey, signature);
+
+		let si = await connection.sendRawTransaction(tx.serialize());
+		const hash = await connection.confirmTransaction(si);
+
+		// console.log(hash);
+
+		this.setState({tokenAccount: newAccount.publicKey.toBase58()});
+	}
+
+	setTokenAccount = (tokenAccount) => {
+		this.setState({tokenAccount})
+	}
+
+	setSenderTokenAccount = (senderTokenAccount) => {
+		this.setState({senderTokenAccount})
 	}
 
     render() {
@@ -84,6 +155,10 @@ class AuthContextProvider extends React.Component {
 				setMintAddress: this.setMintAddress,
 				connectToWallet: this.connectToWallet,
 				handleConnectWallet: this.handleConnectWallet,
+				createTokenAccount: this.createTokenAccount,
+				setTokenAccount: this.setTokenAccount,
+				setSenderTokenAccount: this.setSenderTokenAccount,
+				getMyInfo: this.getMyInfo,
             }}>
                 {this.props.children}
             </AuthContext.Provider>

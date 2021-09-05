@@ -1,5 +1,6 @@
 import React, {
-useContext
+useContext,
+useEffect,
 } from 'react'
 
 
@@ -21,7 +22,7 @@ import {
 import {
 	// ASSOCIATED_TOKEN_PROGRAM_ID,
 	MintLayout,
-	// AccountLayout,
+	AccountLayout,
 	Token,
 	TOKEN_PROGRAM_ID,
 	// u64
@@ -50,27 +51,36 @@ const DashboardView = ({match, ...props}) => {
 	const senderName = urlDataArr[1]
 
     const {
-        getConnection,
-        getPublicKey,
-        getRecentBlockhash,
-        setMintAddress,
 		address,
-		handleConnectWallet
+		handleConnectWallet,
+		getRecentBlockhash,
+        setMintAddress,
+        mintAddress,
+        tokenAccount,
+		getPublicKey,
+        // createTokenAccount,
+		setTokenAccount,
+		getConnection,
+		setSenderTokenAccount,
+		senderTokenAccount,
+		getMyInfo,
     } = useContext(AuthContext)
 
-    const createTokens = async () => {
+	const createTokens = async () => {
 
-		let connection = getConnection()
+		const connection = getConnection()
 
 		// create new Account
 		const mintAccount = new Keypair()
+
+        const expectedMintBalance = await Token.getMinBalanceRentForExemptMint(connection)
 
 		try {
 
 			const createAccIx = SystemProgram.createAccount({
 				fromPubkey: getPublicKey(),
 				newAccountPubkey: mintAccount.publicKey,
-				lamports: LAMPORTS_PER_SOL,
+				lamports: expectedMintBalance,
 				space: MintLayout.span,
 				programId: TOKEN_PROGRAM_ID,
 			})
@@ -130,6 +140,109 @@ const DashboardView = ({match, ...props}) => {
 		}
 	}
 
+    const checkBalance = async () => {
+        const conn = getConnection()
+		const userBalance = (await conn.getBalance(getPublicKey())) // / LAMPORTS_PER_SOL
+
+
+        const expectedAccBalance = await Token.getMinBalanceRentForExemptAccount(conn)
+        const expectedMintBalance = await Token.getMinBalanceRentForExemptMint(conn)
+
+        const minBalance = (expectedAccBalance + expectedMintBalance)
+
+        if (userBalance >= minBalance) {
+            createTokens()
+        } else {
+            notify({
+                message: 'Not enough tokens in wallet.',
+                description: `Please add more coins to your wallet to proceed. You are around ${userBalance - minBalance} SOLs short.`
+            })
+        }
+    }
+
+	const createTokenAccount = async (pubkey) => {
+		const tokenMintPubkey = new PublicKey(`${mintAddress}`)
+		const ownerPubkey = pubkey ? new PublicKey(pubkey) : getPublicKey()
+
+		const connection = getConnection()
+
+		const balanceNeeded = await Token.getMinBalanceRentForExemptAccount(connection)
+
+		const newAccount = new Keypair()
+
+		const createAccIx = SystemProgram.createAccount({
+			fromPubkey: ownerPubkey,
+			newAccountPubkey: newAccount.publicKey,
+			lamports: balanceNeeded,
+			space: AccountLayout.span,
+			programId: TOKEN_PROGRAM_ID
+		});
+
+		const createTokenAccountIx = Token.createInitAccountInstruction(
+			TOKEN_PROGRAM_ID,
+			tokenMintPubkey,
+			newAccount.publicKey,
+			ownerPubkey
+		);
+
+		let tx = new Transaction().add(createAccIx, createTokenAccountIx);
+
+		tx.feePayer = ownerPubkey;
+
+		tx.recentBlockhash = (await getRecentBlockhash()).blockhash;
+
+		tx.sign(newAccount);
+
+		const signedTransaction = await window.solana.request({
+			method: "signTransaction",
+			params: {
+				message: bs58.encode(tx.serializeMessage()),
+			},
+		});
+		// console.log(signedTransaction);
+
+		const signature = bs58.decode(signedTransaction.signature);
+		const publicKey = new PublicKey(signedTransaction.publicKey);
+		tx.addSignature(publicKey, signature);
+
+		let si = await connection.sendRawTransaction(tx.serialize());
+		const hash = await connection.confirmTransaction(si);
+
+		console.log(hash);
+
+		if (pubkey) {
+			setSenderTokenAccount(newAccount.publicKey.toBase58())
+		} else {
+			setTokenAccount(newAccount.publicKey.toBase58())
+		}
+	}
+
+	useEffect(() => {
+        if (mintAddress) {
+            createTokenAccount()
+        }
+    }, [mintAddress])
+
+	useEffect(() => {
+		if(tokenAccount) {
+			createTokenAccount(senderPubkey)
+		}
+	}, [tokenAccount])
+
+	useEffect(() => {
+		if (senderTokenAccount) {
+			const myInfo = async () => {
+				const result = await getMyInfo()
+				console.log(result)
+			}
+			myInfo()
+			notify({
+				message: `I now pronounce you SolMates with ${senderPubkey}`
+			})
+		}
+	}, [senderTokenAccount])
+    
+
     return (
         <>
 		<Row align="center" justify="center">
@@ -140,7 +253,7 @@ const DashboardView = ({match, ...props}) => {
 						<Button 
 							size="large" 
 							type="primary" 
-							onClick={createTokens}
+							onClick={checkBalance.bind(this)}
 						>
 							Make them your SolMate
 						</Button>

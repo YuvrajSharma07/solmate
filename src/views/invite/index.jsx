@@ -38,7 +38,7 @@ import { notify } from '../../utils/notifications'
 const InviteView = () => {
 
     const {
-        getConnection,
+        // getConnection,
         getPublicKey,
     } = useContext(AuthContext)
     
@@ -50,6 +50,7 @@ const InviteView = () => {
 
     const [inputVal, setInputVal] = useState((String(`${window.location.origin}/invite/${window.btoa(urlData)}`)))
 
+    console.log(urlData)
 
     const copyLink = () => {
         navigator.clipboard.writeText(inputVal)
@@ -61,10 +62,6 @@ const InviteView = () => {
     const handleInput = (char) => {
         setUsername(char.replace(' ', ''))
     }
-
-    // useEffect(() => {
-        
-    // }, [])
 
     return (
         <>
@@ -79,7 +76,7 @@ const InviteView = () => {
                         <Input 
                             value={username} 
                             onChange={(e) => {handleInput(e.target.value)}} 
-                            onBlur={() => setInputVal(String(`${window.location.origin}/invite/${window.btoa(`${publicKey} ${username}`)}`))}
+                            onBlur={() => setInputVal(String(`${window.location.origin}/invite/${window.btoa(urlData)}`))}
                         />
                     </div>
                     <hr style={{border: '0.5px solid #eee'}} />
@@ -90,6 +87,14 @@ const InviteView = () => {
                             addonAfter={<Button type="ghost" onClick={copyLink}>Copy link</Button>} 
                             readOnly 
                         />
+                        {/* {(mintAddress && tokenAccount) ? 
+                        :
+                            <div>
+                                <Button onClick={checkBalance.bind(this)} type="primary" size="large">
+                                    Send proposal your partner
+                                </Button>
+                            </div>
+                        } */}
                     </div>
                 </div>
             </div>
