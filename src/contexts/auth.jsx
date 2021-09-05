@@ -6,6 +6,11 @@ import {
 	PublicKey,
 } from '@solana/web3.js'
 
+import {
+	TOKEN_PROGRAM_ID,
+
+} from '@solana/spl-token'
+
 const defaultAuthContextState = {
     address: null,
     mintAddress: null,
@@ -65,7 +70,7 @@ class AuthContextProvider extends React.Component {
 
 	getMyInfo = async () => {
 		const conn = this.getConnection()
-		const result = await conn.getParsedTokenAccountsByOwner(getPublicKey(), {programId: TOKEN_PROGRAM_ID}, 'processed')
+		const result = await conn.getParsedTokenAccountsByOwner(this.getPublicKey(), {programId: TOKEN_PROGRAM_ID}, 'processed')
 		return result
 	}
 
